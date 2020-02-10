@@ -1,3 +1,4 @@
+(* Exercise 2 *)
 (* Binding using pattern matching directly in the head *)
 let fst (x, _) = x
 
