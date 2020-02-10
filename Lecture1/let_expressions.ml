@@ -9,11 +9,11 @@ let x = 1 in let y = x in y;;
 
 (* 3 *)
 (* let x = 1 and y = x in y *)
-(* Invalid, this is not how "and" is used in OCaml. Instead we should keep nesting with "in". *)
+(* Invalid, and simply binds x and y simultaneously, but not in a nested scope as we need. Instead we should keep nesting with "in". *)
 
 (* 4 *)
 (* let x = 1 and x = 2 in x *)
-(* Invalid, same argument as above. It also tries to redeclare x without being in a nested scope. *)
+(* Invalid, same argument as above. It tries to redeclare x at the same scope level. *)
 
 (* 5 *)
 let x = 1 in let x = x in x;;
