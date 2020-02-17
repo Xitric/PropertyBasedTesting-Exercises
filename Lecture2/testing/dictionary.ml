@@ -1,12 +1,12 @@
-let empty = []
+(* Exercise 9 *)
+let empty k = 0
 
-(* TODO: Update existing vlaue on colliding keys *)
-let add dict key value = (key, value) :: dict
-
-let rec find dict key = match dict with
-    | [] -> 0
-    | (k, v) :: rest ->
-        if k = key then
+(* We represent our dictionary as a function, that can fall back on a previous dictionary function, etc. until we reach the base case *)
+let add d k v =
+    fun k' ->
+        if k = k' then
             v
         else
-            find rest key
+            d k'
+
+let find d k = d k
