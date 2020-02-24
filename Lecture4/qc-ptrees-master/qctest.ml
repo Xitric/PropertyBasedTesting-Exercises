@@ -115,6 +115,31 @@ let rec inter_m s s' = match s with
   | [] -> []
   | e::s -> if List.mem e s' then e::(inter_m s s') else inter_m s s'
 
+(* BEGIN Exercise 5 fragment *)
+let is_empty_m s = match s with
+  | [] -> true
+  | _ -> false
+
+let rec diff_m s s' = match s, s' with (* Subtract s' from s *)
+  | [], _ -> []
+  | _, [] -> s
+  | i::is,j::js -> if i < j then i::(diff_m is s') else
+                    if j < i then diff_m s js else (* We ignore values from s' *)
+		                diff_m is js (* We remove equal values *)
+
+let rec equal_m s s' = match s, s' with
+  | [], [] -> true
+  | ([], _ | _, []) -> false
+  | i::is,j::js -> if i = j then equal_m is js else false
+
+let rec subset_m s s' = match s, s' with (* Is s a subset of s'? *)
+  | [], _ -> true
+  | _, [] -> false
+  | i::is,j::js -> if i = j then subset_m is js else (* All is good so far *)
+                    if i > j then subset_m s js else (* We drop some small values from s' to find a potential match to i *)
+                    false (* If i becomes smallest, that value does not appear in s' *)
+(* END Exercise 5 fragment *)
+
 (*let abstract s = Ptset.elements s*)
 let abstract s = List.sort compare (Ptset.fold (fun i a -> i::a) s [])
 
@@ -171,6 +196,39 @@ let inter_test =
       let s' = interpret t' in
       abstract (Ptset.inter s s') = inter_m (abstract s) (abstract s'))
 
+(* BEGIN Exercise 5 fragment *)
+let is_empty_test =
+  Test.make ~name:"is_empty test" ~count:test_count
+  arb_tree
+  (fun t ->
+    let s = interpret t in
+    Ptset.is_empty s = is_empty_m (abstract s))
+
+let diff_test =
+  Test.make ~name:"diff test" ~count:test_count
+  (pair arb_tree arb_tree)
+  (fun (t, t') ->
+    let s = interpret t in
+    let s' = interpret t' in
+    abstract (Ptset.diff s s') = diff_m (abstract s) (abstract s'))
+
+let equal_test =
+  Test.make ~name:"equal test" ~count:test_count
+  (pair arb_tree arb_tree)
+  (fun (t, t') ->
+    let s = interpret t in
+    let s' = interpret t' in
+    Ptset.equal s s' = equal_m (abstract s) (abstract s'))
+
+let subset_test =
+  Test.make ~name:"subset test" ~count:test_count
+  (pair arb_tree arb_tree)
+  (fun (t, t') ->
+    let s = interpret t in
+    let s' = interpret t' in
+    Ptset.subset s s' = subset_m (abstract s) (abstract s'))
+(* END Exercise 5 fragment *)
+
 ;;
   QCheck_runner.run_tests(*_main*) ~verbose:true
     [ test_empty;
@@ -180,4 +238,10 @@ let inter_test =
       remove_test;
       union_test;
       inter_test;
+
+      (* Exercise 5 *)
+      is_empty_test; (* Passes *)
+      diff_test; (* Fails, max_int and min_int seem problematic *)
+      equal_test; (* Passes *)
+      subset_test; (* Passes *)
     ]
