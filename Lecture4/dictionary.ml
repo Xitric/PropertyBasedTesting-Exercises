@@ -3,7 +3,7 @@ module type DictSig =
 sig
     type key = string
     type value = int
-    type dictionary
+    type dictionary (* Since we do not expose the type of dictionary, clients can only make them using the functions of this module *)
     val empty : dictionary
     val add : dictionary -> key -> value -> dictionary
     val find : dictionary -> key -> value
