@@ -1,6 +1,7 @@
 open QCheck
 
 (* Exercise 4 *)
+(* The test fails when we push 98 and then call the length function *)
 
 (* This code requires the opam package qcstm:
       opam install qcstm
@@ -16,16 +17,20 @@ struct
   type cmd =
     | Pop (* may throw exception *)
     | Top (* may throw exception *)
-    | Push of int [@@deriving show { with_path = false }]
+    | Push of int
+    | Length [@@deriving show { with_path = false }]
 
   let gen_cmd s =
     let int_gen = Gen.small_nat in
     if s = []
-    then Gen.map (fun i -> Push i) int_gen (* don't generate pop/tops from empty *)
+    then Gen.oneof (* don't generate pop/tops from empty *)
+           [Gen.map (fun i -> Push i) int_gen;
+           Gen.return Length]
     else Gen.oneof
            [Gen.return Pop;
             Gen.return Top;
-            Gen.map (fun i -> Push i) int_gen]
+            Gen.map (fun i -> Push i) int_gen;
+            Gen.return Length]
 
   let arb_cmd s = QCheck.make ~print:show_cmd (gen_cmd s)
 
@@ -35,7 +40,7 @@ struct
       (match s with
         | []    -> []
         | _::s' -> s')
-    | Top -> s
+    | (Top | Length) -> s
     | Push i -> (*s@[i]*)
       if i<>98 then s@[i] else s  (* an artificial fault in the model *)
 
@@ -45,11 +50,12 @@ struct
     | Pop -> (try Queue.pop q = List.hd s with _ -> false)
     | Top -> (try Queue.top q = List.hd s with _ -> false)
     | Push n -> Queue.push n q; true
+    | Length -> Queue.length q = List.length s
 
   let precond c s = match c with
     | Pop    -> s<>[]
     | Top    -> s<>[]
-    | Push _ -> true
+    | (Push _ | Length) -> true
 end
 
 module QT = QCSTM.Make(QConf)
