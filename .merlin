@@ -5,4 +5,4 @@ S .
 B _build
 
 # package path
-PKG qcheck qcstm ppx_deriving.show
+PKG qcheck qcstm ppx_deriving.show ctypes ctypes.foreign
