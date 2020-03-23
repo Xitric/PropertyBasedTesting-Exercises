@@ -8,3 +8,6 @@ let rec fac n = match n with
 
 (* This results in 100% coverage *)
 Printf.printf "%i\n" (fac 5)
+
+(* Coverage results are available for me at *)
+(* file://wsl%24/Ubuntu//home/xitric/ocaml-projects/Lecture8/coverage/index.html *)

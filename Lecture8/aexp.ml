@@ -45,3 +45,6 @@ let test_interpret =
                          = interpret xval (Plus(e1,e0)))
 ;;
 QCheck_runner.run_tests ~verbose:true [test_interpret]
+
+(* Coverage results are available for me at *)
+(* file://wsl%24/Ubuntu//home/xitric/ocaml-projects/Lecture8/coverage/index.html *)
