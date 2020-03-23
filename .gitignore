@@ -38,6 +38,9 @@ _esy/
 _build.prev/
 node_modules/
 
+# Bisect_ppx
+coverage/
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
