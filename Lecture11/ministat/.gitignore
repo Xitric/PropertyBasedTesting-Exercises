@@ -1,0 +1,10 @@
+ministat
+*.o
+*.core
+chameleon
+iguana
+out/queue
+out/.cur_input
+out/fuzz_bitmap
+out/fuzzer_stats
+out/plot_data
